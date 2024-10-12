@@ -1,0 +1,117 @@
+{% extends "main.html" %}
+{% load static %}
+{% block style %}
+    <style>
+        header {
+            font-size: 1em;
+            color: aliceblue;
+            user-select: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 3px 2px;
+            background: #9DC183;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99;
+        }
+        section {
+            width: 60%;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 100px auto;
+        }
+        section img {
+            display: block; /* ทำให้รูปภาพอยู่ในบรรทัดใหม่ */
+            margin: 20px auto; /* จัดให้รูปภาพอยู่กลางและมีระยะห่างด้านบน */
+            max-width: 200px; 
+            height: auto; 
+        }
+        .button {
+            background-color: #9DC183;
+            border: none;
+            border-style: solid;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .custom{
+            margin: 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+        }
+        select{
+            padding: 15px 24px;
+            border: none;
+            border-style: solid;
+            border-color: gray;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <header>
+        <h1>Body Guide</h1>
+    </header>
+    <section>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- ฟิลด์อัปโหลดไฟล์ -->
+            <div>
+                <label for="file">Upload your image:</label>
+                {{ form.file }}
+            </div>
+
+            <!-- ฟิลด์เลือกรูปร่าง -->
+            <div class="custom">
+                <!--label for="shape">Select your body shape:</label-->
+
+                <select name="shape" id="shape" required>
+                    <option value="">-- Choose your shape --</option>
+                    <option value="Pear">Pear</option>
+                    <option value="Apple">Apple</option>
+                    <option value="Inverted triangle">Inverted Triangle</option>
+                    <!-- สามารถเพิ่มรูปแบบรูปร่างเพิ่มเติมได้ -->
+                </select>
+            </div>
+
+            <!-- ปุ่ม submit -->
+            <div>
+                <button type="submit" class="button">Upload and Predict</button>
+            </div>
+
+
+
+        </form>
+
+
+        <!-- การแสดงผลไฟล์ที่อัปโหลด -->
+        {% if file %}
+        <div>
+            <img src="/media/upload/{{file.name}}"><br>
+        </div>
+        {% endif %}
+
+        <!-- แสดงผลลัพธ์การทำนาย -->
+        <div class="result">
+            {% if shape_suitability %}
+                <h3>Result:</h3>
+                <p>{{ shape_suitability }}</p>
+            {% endif %}
+        </div>
+    </section>
+
+{% endblock %}
