@@ -16,9 +16,9 @@ def delete_old_file(dir, file_extension):
             file_path = os.path.join(dir, filename)
             try:
                 os.remove(file_path)  # ลบไฟล์
-                print(f"Deleted: {file_path}")
-            except Exception as e:
-                print(f"Error deleting file {file_path}: {e}")
+                #print(f"Deleted: {file_path}")
+            #except Exception as e:
+                #print(f"Error deleting file {file_path}: {e}")
 
 def upload_basic(request):
     if request.method == 'POST':
@@ -56,11 +56,11 @@ def predict_image(dir, file, user_shape):
     # Initialize the client
     CLIENT = InferenceHTTPClient(
         api_url="https://detect.roboflow.com",
-        api_key="erSAjHq0WoW2Xenfpq7k"
+        api_key="WKJ8dPUdiWFISFezVm7W"
     )
 
     # ผลลัพธ์จาก classification โดยโมเดล
-    result = CLIENT.infer(picture_file, model_id="getdress-egfii/1")
+    result = CLIENT.infer(image_path, model_id="bodyguideee/1")
 
     # Extract predictions
     predictions = result['predictions']
@@ -71,7 +71,7 @@ def predict_image(dir, file, user_shape):
     confidence = highest_confidence_prediction['confidence']
 
     # แสดงผลลัพธ์การทำนาย
-    print(f"Class: {class_name}, Confidence: {confidence:.2f}")
+    #print(f"Class: {class_name}, Confidence: {confidence:.2f}")
 
     # ตรวจสอบว่าเสื้อผ้านี้เหมาะสมกับรูปร่างแบบไหน
     shape_list = []
@@ -88,9 +88,9 @@ def predict_image(dir, file, user_shape):
         
     # ตรวจสอบว่ารูปร่างของผู้ใช้เหมาะสมกับเสื้อผ้าหรือไม่
     if user_shape in shape_list:
-        return f"This clothes is suitable for your shape" #{class_name} is suitable for your shape
+        return f"{class_name} is suitable for your shape" #{class_name} is suitable for your shape
     else:
-        return f"This clothes is NOT suitable for your shape" #{class_name} is NOT suitable for your shape
+        return f"{class_name} is NOT suitable for your shape" #{class_name} is NOT suitable for your shape
 
 # ฟังก์ชันสำหรับบันทึกไฟล์
 def save_file(dir, file):
