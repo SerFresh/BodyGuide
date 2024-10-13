@@ -60,7 +60,7 @@ def predict_image(dir, file, user_shape):
     )
 
     # ผลลัพธ์จาก classification โดยโมเดล
-    result = CLIENT.infer(image_path, model_id="bodyguideee/1")
+    result = CLIENT.infer(picture_file, model_id="getdress-egfii/1")
 
     # Extract predictions
     predictions = result['predictions']
