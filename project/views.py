@@ -14,8 +14,8 @@ def delete_old_file(dir, file_extension):
     for filename in os.listdir(dir):
         if filename.endswith(file_extension):
             file_path = os.path.join(dir, filename)
-            try:
-                os.remove(file_path)  # ลบไฟล์
+            #try:
+            os.remove(file_path)  # ลบไฟล์
                 #print(f"Deleted: {file_path}")
             #except Exception as e:
                 #print(f"Error deleting file {file_path}: {e}")
