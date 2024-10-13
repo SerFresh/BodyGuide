@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(x7-dk=&d5w#kbh))=cfv6%#qwpn()u*f876(yl7mj6q!*49t$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [] # ใส่IP หลังสร้าง instance
 
 
 # Application definition
