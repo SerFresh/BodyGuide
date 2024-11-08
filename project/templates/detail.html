@@ -1,0 +1,446 @@
+{% extends "main.html" %}
+{% block style %}
+    <style>
+        header {
+            font-size: 1.5em; /* ขนาดฟอนต์ของหัวข้อใหญ่ขึ้น */
+            color: #fff; /* สีตัวอักษรขาว */
+            background-color: #9DC183; /* พื้นหลังสีเขียวสด */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center; /* จัดตำแหน่ง h1 ให้อยู่กลาง */
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            text-align: center;
+        }
+
+        section {
+            width: 80%;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 100px auto;
+        }
+        .block {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 10px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .grid{
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+            gap: 20px; /* Space between columns */
+            padding: 10px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .a {
+            position: fixed;
+            background-color: #9DC183;
+            border: none;
+            border-style: solid;
+            color: #ffffff;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        
+        h3 {
+            background-color: #9DC183;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin: 10px;
+        }
+        
+        .content div{
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin: 10px;
+        }
+          
+        .content {
+            float: left;
+            text-align: center;
+            margin: 2px;
+            display: none; /* Hidden by default */
+        }
+          
+          /* The "show" class is added to the filtered elements */
+        .show {
+            display: block;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            background-color: #9DC183; /* สีพื้นหลัง */
+            border: none;
+            border-radius: 10px; /* ทำมุมโค้ง */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ใส่เงา */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* ทำการเปลี่ยนแปลงอย่างสวยงามเมื่อ hover */
+        }
+
+        .active {
+            color: black;
+            background-color: white; /* สีพื้นหลัง */
+        }
+        
+        .btn:hover {
+            background-color: #9DC183; /* เปลี่ยนสีเมื่อ hover */
+            transform: translateY(-2px); /* ทำให้ปุ่มเด้งขึ้นเล็กน้อยเมื่อ hover */
+        }
+        
+        .btn:active {
+            background-color: white;
+            transform: translateY(0); /* เวลาคลิกให้ปุ่มกลับไปที่เดิม */
+        }
+        nav{
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: center; /* จัดตำแหน่ง h1 ให้อยู่กลาง */
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        nav a{
+            margin: 5px;
+        }
+
+        /* Responsive Design */
+        @media only screen and (max-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr); /* Change to 2 columns */
+            }
+
+            section {
+                width: 90%;
+                padding: 20px;
+                margin: 80px auto;
+            }
+
+            header {
+                font-size: 1.2em; /* Adjust header font size */
+            }
+
+            .btn {
+                padding: 10px 20px; /* Adjust button padding */
+            }
+        }
+
+        @media only screen and (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr; /* Change to 1 column */
+            }
+
+            header {
+                font-size: 1em; /* Further reduce header font size */
+            }
+
+            .btn {
+                padding: 8px 16px; /* Further adjust button padding */
+            }
+
+            section {
+                width: 95%;
+                padding: 10px;
+            }
+        }
+    </style>
+{% endblock %}
+{% block body %}
+<header>
+    <h1>Body Guide</h1>
+</header>
+
+<section>
+
+    <div class="block">
+        <h2>ขอบเขตการทำงาน</h2>
+        <p>เนื่องจากโปรเจคของเราเป็นตัวเริ่มต้น ขอบเขตของการทำงานจึงค่อนข้างจำกัด สามารถจำแนกได้เพียงรูปภาพเสื้อผ้าท่อนบนของผู้หญิง ที่มีรูปร่างหุ่นตาม 3 shape ได้แก่ Pear, Apple และ Inverted Triangle 
+        <br>โดยคลาสเสื้อที่แยกได้มีทั้งหมด 31 class ดังนี่</p>
+    </div>
+
+    <div class="block" id="myBtnContainer">
+        <button class="btn active" onclick="filterSelection('all')">All</button>
+        <button class="btn" onclick="filterSelection('Pear')">Pear</button>
+        <button class="btn" onclick="filterSelection('Apple')">Apple</button>
+        <button class="btn" onclick="filterSelection('Inverted')">Inverted Triangle</button>
+    </div>
+
+    <div class="grid">
+        <div class="content Pear">
+            <h3 class="Pear">Pear</h2>
+            <div>
+            <img src="/media/for_details/Bust Pockets Shirts Tops.png" width="100">
+            <p>Bust Pockets Shirts Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Cap Sleeves Tops.png" width="100">
+            <p>Cap Sleeves Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Cowl Neck Tops.png" width="100">
+            <p>Cowl Neck Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Crop Tops.png" width="100">
+            <p>Crop Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Flutter Sleeves Tops.png" width="100">
+            <p>Flutter Sleeves Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Off-Shoulder Tops.png" width="100">
+            <p>Off-Shoulder Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Puff Sleeves.png" width="100">
+            <p>Puff Sleeves</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Ruffle Shirts Tops.png" width="100">
+            <p>Ruffle Shirts Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Sabrina Neck Tops.png" width="100">
+            <p>Sabrina Neck Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Square Neck Tops.png" width="100">
+            <p>Square Neck Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Striped Tops.png" width="100">
+            <p>Striped Tops</p>
+            </div>
+
+        </div>
+
+        <div class="content Apple">
+            <h3 class="Apple">Apple</h2>
+            <div>
+            <img src="/media/for_details/Cap Sleeves Tops.jpeg" width="100">
+            <p>Cap Sleeves Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Cuff Sleeves Tops.jpeg" width="100">
+            <p>Cuff Sleeves Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Flare, Bell Sleeves Tops.jpeg" width="100">
+            <p>Flare, Bell Sleeves Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Scoop Neck Top.png" width="100">
+            <p>Scoop Neck Top</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Slit Sleeves Tops.jpeg"  width="100">
+            <p>Slit Sleeves Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Square Neck Tops.png"  width="100">
+            <p>Square Neck Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Strapless Tops.jpeg"  width="100">
+            <p>Strapless Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Sweet Heart Tops.jpg"  width="100">
+            <p>Sweet Heart Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Tunic Shirts Tops.png"  width="100">
+            <p>Tunic Shirts Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/V-Neck Tops.png"  width="100">
+            <p>V-Neck Tops</p>
+            </div>
+
+            <div>
+            <img src="/media/for_details/Wrap Tops.jpg" width="100">
+            <p>Wrap Tops</p>
+            </div>
+        </div>
+        <div class="content Inverted">
+            <h3 class="Inverted">Inverted Triangle</h2>
+            <div>
+              <img src="/media/for_details/Asymmetric Neck Tops.png"  width="100">
+              <p>Asymmetric Neck Tops</p>
+            </div>
+            
+            <div>
+              <img src="/media/for_details/Dolman Sleeves Tops.png"  width="100">
+              <p>Dolman Sleeves Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Drop Shoulder Sleeves Tops.png"  width="100">
+              <p>Drop Shoulder Sleeves Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Fitted Tops.png"  width="100">
+              <p>Fitted Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Halter Necklines Tops.png"  width="100">
+              <p>Halter Necklines Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Kimono Sleeves Tops.png"  width="100">
+              <p>Kimono Sleeves Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/One Shoulder Tops.png"  width="100">
+              <p>One Shoulder Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Peplum Tops.png"  width="100">
+              <p>Peplum Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Raglan Sleeves Tops.jpg"  width="100">
+              <p>Raglan Sleeves Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Scoop Neck Top.jpg"  width="100">
+              <p>Scoop Neck Top</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/U-Neck Tops.png"  width="100">
+              <p>U-Neck Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/V Neck Tops.png"  width="100">
+              <p>V-Neck Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Wide Straps Tops.png"  width="100">
+              <p>Wide Straps Tops</p>
+            </div>
+  
+            <div>
+              <img src="/media/for_details/Wrap Tops.png"  width="100">
+              <p>Wrap Tops</p>
+            </div>
+          </div>
+    </div>
+
+</section>
+<nav>
+    <a href="http://127.0.0.1:8000/guide/" class="btn" onclick="goBack()"><i class="bi bi-arrow-bar-left"></i></a>
+    <a href="http://127.0.0.1:8000/" class="btn" onclick="goToNextPage()"><i class="bi bi-house-door"></i></a> 
+</nav>
+
+<script>
+filterSelection("all")
+function filterSelection(c) {
+    var x, i;
+    x = document.getElementsByClassName("content");
+    if (c == "all") c = "";
+// Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+    for (i = 0; i < x.length; i++) {
+        w3RemoveClass(x[i], "show");
+        if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+    }
+}
+
+// Show filtered elements
+function w3AddClass(element, name) {
+    var i, arr1, arr2;
+    arr1 = element.className.split(" ");
+    arr2 = name.split(" ");
+    for (i = 0; i < arr2.length; i++) {
+        if (arr1.indexOf(arr2[i]) == -1) {
+            element.className += " " + arr2[i];
+        }
+    }
+}
+
+// Hide elements that are not selected
+function w3RemoveClass(element, name) {
+    var i, arr1, arr2;
+    arr1 = element.className.split(" ");
+    arr2 = name.split(" ");
+    for (i = 0; i < arr2.length; i++) {
+        while (arr1.indexOf(arr2[i]) > -1) {
+            arr1.splice(arr1.indexOf(arr2[i]), 1);
+        }
+    }
+    element.className = arr1.join(" ");
+}
+
+// Add active class to the current control button (highlight it)
+var btnContainer = document.getElementById("myBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener("click", function() {
+        var current = document.getElementsByClassName("active");
+        current[0].className = current[0].className.replace(" active", "");
+        this.className += " active";
+    });
+}
+</script>
+{% endblock %}

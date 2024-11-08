@@ -1,0 +1,229 @@
+{% extends "main.html" %}
+{% block style %}
+    <style>
+        header {
+            font-size: 1.5em; /* ขนาดฟอนต์ของหัวข้อใหญ่ขึ้น */
+            color: #fff; /* สีตัวอักษรขาว */
+            background-color: #9DC183; /* พื้นหลังสีเขียวสด */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center; /* จัดตำแหน่ง h1 ให้อยู่กลาง */
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            text-align: center;
+        }
+        section {
+            width: 80%;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 100px auto;
+        }
+        .block {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .block div {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        .a {
+            background-color: #9DC183;
+            border: none;
+            border-style: solid;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            background-color: #9DC183; /* สีพื้นหลัง */
+            border: none;
+            border-radius: 10px; /* ทำมุมโค้ง */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ใส่เงา */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* ทำการเปลี่ยนแปลงอย่างสวยงามเมื่อ hover */
+        }
+        
+        .btn:hover {
+            background-color: #9DC183; /* เปลี่ยนสีเมื่อ hover */
+            transform: translateY(-2px); /* ทำให้ปุ่มเด้งขึ้นเล็กน้อยเมื่อ hover */
+        }
+        
+        .btn:active {
+            background-color: #9DC183;
+            transform: translateY(0); /* เวลาคลิกให้ปุ่มกลับไปที่เดิม */
+        }
+        img {
+            object-fit: cover;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        h4 {
+            color: #9DC183;
+        }
+        
+        p {
+            margin: 10px 0;
+        }
+        
+        strong {
+            font-weight: bold;
+        }
+        nav{
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: center; /* จัดตำแหน่ง h1 ให้อยู่กลาง */
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            section{
+                margin: 50px;
+            }
+
+            .block {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        
+            img {
+                object-fit: cover;
+                width: 120px;
+                height: 120px;
+            }
+        
+            h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            section{
+                margin: 50px;
+            }
+            
+            .block {
+                grid-template-columns: 1fr;
+            }
+        
+            img {
+                object-fit: cover;
+                width: 100px;
+                height: 100px;
+            }
+        
+            h1 {
+                font-size: 1.8rem;
+            }
+        
+        }
+    </style>
+{% endblock %}
+{% block body %}
+<header>
+    <h1>Body Guide</h1>
+</header>
+
+<section>
+    <h2>Members</h2>
+    <div class='block'>
+        
+        <div>
+            <img src="/media/for_members/TN.png">
+            <h4>กัลยรัตน์ ธานีสอน</h4>
+            <p>65010068</p>
+            <p>สาขาระบบไอโอทีและสารสนเทศ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+            <p><strong>หน้าที่:</strong> เก็บข้อมูล, เทรน model</p>
+        </div>
+
+        <div>
+            <img src="/media/for_members/MM.png">
+            <h4>จิภาดา กิตติพงศ์ธร</h4>
+            <p>65010128</p>
+            <p>สาขาระบบไอโอทีและสารสนเทศ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+            <p><strong>หน้าที่:</strong> เก็บข้อมูล, เทรน model, support software</p>
+        </div>
+
+        <div>
+            <img src="/media/for_members/SF.png">
+            <h4>จิรฐิพร รัตนบุตร</h4>
+            <p>65010130</p>
+            <p>สาขาระบบไอโอทีและสารสนเทศ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+            <p><strong>หน้าที่:</strong> เก็บข้อมูล, พัฒนา software,ดูแลระบบ cloud </p>
+        </div>
+
+        <div>
+            <img src="/media/for_members/YY.png">
+            <h4>ณภัทร  ธนาคม</h4>
+            <p>650101460</p>
+            <p>สาขาระบบไอโอทีและสารสนเทศ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+            <p><strong>หน้าที่:</strong> เก็บข้อมูล, เทรน model</p>
+        </div>
+
+        <div>
+            <img src="/media/for_members/AA.png">
+            <h4>เบญจาภา คำพราว</h4>
+            <p>65010567</p>
+            <p>สาขาระบบไอโอทีและสารสนเทศ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+            <p><strong>หน้าที่:</strong> เก็บข้อมูล, support software</p>
+        </div>
+
+        <div>
+            <img src="/media/for_members/NG.png">
+            <h4>ภัทรลภา ศรีทันดร</h4>
+            <p>65010821</p>
+            <p>สาขาระบบไอโอทีและสารสนเทศ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+            <p><strong>หน้าที่:</strong> เก็บข้อมูล, เทรน model, พัฒนาAI</p>
+        </div>
+
+        <div>
+            <img src="/media/for_members/NN.png">
+            <h4>สุขหทัย เรืองรัมย์</h4>
+            <p>65011119</p>
+            <p>สาขาระบบไอโอทีและสารสนเทศ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+            <p><strong>หน้าที่:</strong> เก็บข้อมูล, support software</p>
+        </div>
+    </div>
+
+    
+
+</section>
+<nav>
+    <a href="http://127.0.0.1:8000/" class="btn" onclick="goBack()"><i class="bi bi-arrow-bar-left"></i></a>
+</nav>
+{% endblock %}

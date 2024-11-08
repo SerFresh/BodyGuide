@@ -1,0 +1,131 @@
+{% extends "main.html" %}
+{% block style %}
+    <style>
+        header {
+            font-size: 1.5em; /* ขนาดฟอนต์ของหัวข้อใหญ่ขึ้น */
+            color: #fff; /* สีตัวอักษรขาว */
+            background-color: #9DC183; /* พื้นหลังสีเขียวสด */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center; /* จัดตำแหน่ง h1 ให้อยู่กลาง */
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            text-align: center;
+        }
+        section {
+            width: 60%;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 100px auto;
+        }
+        section img {
+            display: block; /* ทำให้รูปภาพอยู่ในบรรทัดใหม่ */
+            margin: 20px auto; /* จัดให้รูปภาพอยู่กลางและมีระยะห่างด้านบน */
+            max-width: 400px; 
+            height: auto; 
+        }
+        .a {
+            background-color: #9DC183;
+            border: none;
+            border-style: solid;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            background-color: #9DC183; /* สีพื้นหลัง */
+            border: none;
+            border-radius: 10px; /* ทำมุมโค้ง */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ใส่เงา */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* ทำการเปลี่ยนแปลงอย่างสวยงามเมื่อ hover */
+        }
+        
+        .btn:hover {
+            background-color: #9DC183; /* เปลี่ยนสีเมื่อ hover */
+            transform: translateY(-2px); /* ทำให้ปุ่มเด้งขึ้นเล็กน้อยเมื่อ hover */
+        }
+        
+        .btn:active {
+            background-color: #9DC183;
+            transform: translateY(0); /* เวลาคลิกให้ปุ่มกลับไปที่เดิม */
+        }
+        nav{
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: center; /* จัดตำแหน่ง h1 ให้อยู่กลาง */
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        nav a{
+            margin: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            img {
+                width: 220px;
+                height: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            img {
+                width: 200px;
+                height: auto;
+            }
+        }
+    </style>
+    
+{% endblock %}
+{% block body %}
+<header>
+    <h1>Body Guide</h1>
+</header>
+
+<section>
+    <h2>Tutorial</h2>
+    <p>หน้าจอ USER เริ่มต้น</p>
+    <p>ขั้นตอนการใช้งาน</p>
+    <p>1. อัพโหลดรูปภาพเสื้อผ้าที่ต้องการเช็ค</p>
+    <img src="/media/for_guide/step2.jpg" width="500" height="300">
+    <p>2. เลือกรูปร่างของ USER ในแถบเมนู --Choose your shape--</p>
+    <img src="/media/for_guide/step3.png" width="500" height="300">
+    <p>เมื่อทำทั้งสองขั้นตอนเสร็จแล้ว กดที่ปุ่ม Upload and Predict ได้เลย</p>
+    <p>////////////////////////////////</p>
+    <p>หน้าจอแสดงผลของ USER</p>
+    <img src="/media/for_guide/step1.png"  width="500" height="300">
+    <p>แสดงรูปภาพที่ USER อัพโหลดเข้าไป และมีคำอธิบายประกอบไปด้วยประเภทเสื้อผ้า เหมาะสมกับรูปร่าง USER หรือไม่</p>
+    
+</section>
+<nav>
+    <a href="http://127.0.0.1:8000/" class="btn" onclick="goBack()"><i class="bi bi-arrow-bar-left"></i></a>
+    <a href="http://127.0.0.1:8000/details/" class="btn" onclick="goToNextPage()">More Details</a> 
+</nav>
+{% endblock %}
