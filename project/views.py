@@ -1,32 +1,31 @@
 import os
-import numpy as np
 from django.shortcuts import render
 from .forms import UploadFrom
 import tensorflow as tf
 import pandas as pd
-import tensorflow_hub as hub
 #from tensorflow.keras.models import load_model
-model_path = 'model-21-1.32.h5'
-train_path = '/media/train'
-tf.keras.utils.get_custom_objects().update({'KerasLayer': hub.KerasLayer})
+train_dir = r'media/train'
+    
 
-model = tf.keras.models.load_model(model_path)
-
-# Define image dimensions
-BATCH_SIZE = 64
-image_height, image_width = 600, 600
-
-# Define class names based on your training data
-train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255)
-
-# Define training generator
-train_generator = train_datagen.flow_from_directory(
-    train_path,  # training data directory
-    target_size=(image_height, image_width),  # Set dimensions as a tuple
-    batch_size=BATCH_SIZE,
-    class_mode='categorical',  # multi-class classification
-    shuffle=True               # Shuffle the data to avoid order bias
+train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+    rescale=1.0/255,
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
 )
+
+# สร้าง data generator
+train_generator = train_datagen.flow_from_directory(
+    train_dir,
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode='categorical'
+)
+
 ###############
  #ส่วน url!!!
 def index(request):
@@ -114,34 +113,32 @@ def predict_image(dir, img_path, user_shape):
 
     # Load and preprocess the image
     picture = os.path.join(dir, img_path)
-    img = tf.keras.preprocessing.image.load_img(picture, target_size=(600, 600))
+    img = tf.keras.preprocessing.image.load_img(picture, target_size=(224, 224))
     img_array = tf.keras.preprocessing.image.img_to_array(img)
-    img_array = np.expand_dims(img_array, 0) / 255.0
+    img_array = tf.expand_dims(img_array, 0) / 255.0
     
     # Load the trained model
+    model = tf.keras.models.load_model('best_model_mobilenet.h5')
     predictions = model.predict(img_array)
     
-    class_labels = list(train_generator.class_indices.keys())  # Example: Assuming df has a 'Class' column
-    
     # Get predicted class and confidence
-    #predicted_class = tf.argmax(predictions, axis=1).numpy()[0]
-    #confidence = tf.reduce_max(predictions).numpy()
-    predicted_class_index = np.argmax(predictions, axis=1)[0]  # Class index with highest probability
-    predicted_class_name = class_labels[predicted_class_index]
-    confidence = np.max(predictions)
+    predicted_class = tf.argmax(predictions, axis=1).numpy()[0]
+    confidence = tf.reduce_max(predictions).numpy()
+
     # Get class labels (ensure you have these labels saved during training)
-    
+    class_labels = list(train_generator.class_indices.keys())  # Example: Assuming df has a 'Class' column
+    predicted_class = class_labels[predicted_class]
     
     # Extract the shape list for the predicted class
-    shape_list = df[df['Class'] == predicted_class_name]['Shape'].values[0].split(",")
+    shape_list = df[df['Class'] == predicted_class]['Shape'].values[0].split(",")
 
     # Check if predicted class matches the user's shape
-    if predicted_class_name == "other":
+    if predicted_class == "other":
         return user_shape, "Please upload a valid image of clothing.", confidence
     elif user_shape in shape_list:
-        return user_shape, f"Predicted Class: {predicted_class_name} is suitable for your shape.", confidence
+        return user_shape, f"Predicted Class: {predicted_class} is suitable for your shape.", confidence
     else:
-        return user_shape, f"Predicted Class: {predicted_class_name} is NOT suitable for your shape.", confidence
+        return user_shape, f"Predicted Class: {predicted_class} is NOT suitable for your shape.", confidence
 
 # ฟังก์ชันสำหรับบันทึกไฟล์
 def save_file(dir, file):
