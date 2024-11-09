@@ -1,30 +1,9 @@
 import os
 from django.shortcuts import render
 from .forms import UploadFrom
-import tensorflow as tf
 import pandas as pd
+from inference_sdk import InferenceHTTPClient #for roboflow connection
 #from tensorflow.keras.models import load_model
-train_dir = r'media/train'
-    
-
-train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-    rescale=1.0/255,
-    rotation_range=40,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    fill_mode='nearest'
-)
-
-# สร้าง data generator
-train_generator = train_datagen.flow_from_directory(
-    train_dir,
-    target_size=(224, 224),
-    batch_size=32,
-    class_mode='categorical'
-)
 
 ###############
  #ส่วน url!!!
@@ -107,38 +86,42 @@ custom_objects = {
     # 'CustomActivation': custom_activation_function
 }
 # Prediction function
-def predict_image(dir, img_path, user_shape):
-    # Load the class shape data
+
+def predict_image(dir, filename, user_shape):
+    picture_file = os.path.join(dir, filename)
+
+    # Initialize the client
+    CLIENT = InferenceHTTPClient(
+        api_url="https://detect.roboflow.com",
+        api_key="WKJ8dPUdiWFISFezVm7W"
+    )
+
+    # ผลลัพธ์จาก classification โดยโมเดล
+    result = CLIENT.infer(picture_file, model_id="getdress-egfii/1")
+
+    # Extract predictions
+    predictions = result['predictions']
+
+    # เลือกการทำนายที่มีความมั่นใจสูงที่สุด
+    highest_confidence_prediction = max(predictions, key=lambda x: x['confidence'])
+    class_name = highest_confidence_prediction['class']
+    confidence = highest_confidence_prediction['confidence']
+
+    # โหลดไฟล์ CSV
     df = pd.read_csv('ClassWithShape.csv')
-
-    # Load and preprocess the image
-    picture = os.path.join(dir, img_path)
-    img = tf.keras.preprocessing.image.load_img(picture, target_size=(224, 224))
-    img_array = tf.keras.preprocessing.image.img_to_array(img)
-    img_array = tf.expand_dims(img_array, 0) / 255.0
     
-    # Load the trained model
-    model = tf.keras.models.load_model('best_model_mobilenet.h5')
-    predictions = model.predict(img_array)
-    
-    # Get predicted class and confidence
-    predicted_class = tf.argmax(predictions, axis=1).numpy()[0]
-    confidence = tf.reduce_max(predictions).numpy()
+    # ค้นหาชื่อคลาสที่ตรงกัน
+    matching_rows = df[df['Class'] == class_name]
 
-    # Get class labels (ensure you have these labels saved during training)
-    class_labels = list(train_generator.class_indices.keys())  # Example: Assuming df has a 'Class' column
-    predicted_class = class_labels[predicted_class]
-    
-    # Extract the shape list for the predicted class
-    shape_list = df[df['Class'] == predicted_class]['Shape'].values[0].split(",")
-
-    # Check if predicted class matches the user's shape
-    if predicted_class == "other":
-        return user_shape, "Please upload a valid image of clothing.", confidence
-    elif user_shape in shape_list:
-        return user_shape, f"Predicted Class: {predicted_class} is suitable for your shape.", confidence
+    # ดึงข้อมูลรูปร่างที่เหมาะสม
+    shape_list = []
+    for value in matching_rows['Shape']:
+        shape_list = value.split(",")
+        
+    if user_shape in shape_list:
+        return user_shape, f"Predicted Class: {class_name} is suitable for your shape.", confidence
     else:
-        return user_shape, f"Predicted Class: {predicted_class} is NOT suitable for your shape.", confidence
+        return user_shape, f"Predicted Class: {class_name} is NOT suitable for your shape.", confidence
 
 # ฟังก์ชันสำหรับบันทึกไฟล์
 def save_file(dir, file):
