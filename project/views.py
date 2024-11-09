@@ -1,96 +1,144 @@
-from django.http import HttpResponse
+import os
 from django.shortcuts import render
 from .forms import UploadFrom
-from inference_sdk import InferenceHTTPClient
-import os
-import random
+import tensorflow as tf
 import pandas as pd
+#from tensorflow.keras.models import load_model
+train_dir = r'media/train'
+    
 
+train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+    rescale=1.0/255,
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
+
+# สร้าง data generator
+train_generator = train_datagen.flow_from_directory(
+    train_dir,
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode='categorical'
+)
+
+###############
+ #ส่วน url!!!
 def index(request):
     return render(request, 'index.html')
-
+def detail(request):
+    return render(request, 'detail.html')
+def members(request):
+    return render(request, 'members.html')
+###############
 def delete_old_file(dir, file_extension):
-    # วนลูปค้นหาไฟล์ใน directory ที่มีนามสกุลตามที่ระบุ เช่น .jpg หรือ .png
     for filename in os.listdir(dir):
         if filename.endswith(file_extension):
             file_path = os.path.join(dir, filename)
-            #try:
-            os.remove(file_path)  # ลบไฟล์
-                #print(f"Deleted: {file_path}")
-            #except Exception as e:
-                #print(f"Error deleting file {file_path}: {e}")
+            os.remove(file_path)
+
+def generate_unique_filename(dir, filename):
+    # ตรวจสอบชื่อไฟล์ที่ซ้ำกันและเปลี่ยนชื่อไฟล์ให้ไม่ซ้ำ
+    basename, ext = os.path.splitext(filename)
+    new_filename = f"{basename}{ext}"
+    counter = 1
+    while os.path.exists(os.path.join(dir, new_filename)):
+        new_filename = f"{basename}({counter}){ext}"
+        counter += 1
+    return new_filename
 
 def upload_basic(request):
     if request.method == 'POST':
         form = UploadFrom(request.POST, request.FILES)
+        
         if form.is_valid():
-            file = request.FILES['file']
-            save_file('media/upload/', file)
+            # ตรวจสอบว่ามีการอัปโหลดไฟล์ใหม่หรือไม่
+            if 'file' in request.FILES:
+                file = request.FILES['file']
+                # เก็บไฟล์ในเซสชัน
+                saved_filename = save_file('media/upload/', file)
+                request.session['file_name'] = saved_filename  # เก็บชื่อไฟล์ที่อัปโหลดในเซสชัน
 
-            # ตรวจสอบว่าผู้ใช้เลือกรูปร่างแล้วหรือยัง
-            user_shape = request.POST.get('shape')  # รับรูปร่างจากฟอร์ม
+            else:
+                # ใช้ไฟล์เดิมจากเซสชัน
+                saved_filename = request.session.get('file_name')
+                if saved_filename:
+                    file = None  # ไม่ต้องรับไฟล์ใหม่ แต่ใช้ไฟล์เดิม
 
-            # ทำการทำนายภาพ
-            if user_shape:
-                shape_suitability = predict_image('media/upload/', file, user_shape)
+            # รับรูปร่างที่ผู้ใช้เลือก
+            user_shape = request.POST.get('shape')
+
+            # ทำการทำนายรูปภาพ
+            if saved_filename and user_shape:
+                shape, shape_suitability, confidence = predict_image('media/upload/', saved_filename, user_shape)
+                confidence = round(confidence * 100, 2)
             else:
                 shape_suitability = None
+                confidence = None
+                shape = None
         else:
+            form = UploadFrom()
             file = None
             shape_suitability = None
+            saved_filename = None
+            confidence = None
+            shape = None
     else:
         form = UploadFrom()
         file = None
         shape_suitability = None
-
+        saved_filename = None
+        confidence = None
+        shape = None
+   
     return render(request, 'upload-basic.html', {
         'form': form,
-        'file': file,
-        'shape_suitability': shape_suitability
+        'file': saved_filename,  # แสดงชื่อไฟล์ที่อัปโหลด
+        'shape_suitability': shape_suitability,
+        'shape': shape,
+        'confidence': confidence
     })
+custom_objects = {
+    # 'CustomLayer': CustomLayerClass,
+    # 'CustomActivation': custom_activation_function
+}
+# Prediction function
+def predict_image(dir, img_path, user_shape):
+    # Load the class shape data
+    df = pd.read_csv('ClassWithShape.csv')
 
-# ฟังก์ชันสำหรับการทำนายภาพ
-def predict_image(dir, file, user_shape):
-    picture_file = f'{dir}{file.name}'
-
-    # Initialize the client
-    CLIENT = InferenceHTTPClient(
-        api_url="https://detect.roboflow.com",
-        api_key="WKJ8dPUdiWFISFezVm7W"
-    )
-
-    # ผลลัพธ์จาก classification โดยโมเดล
-    result = CLIENT.infer(picture_file, model_id="getdress-egfii/1")
-
-    # Extract predictions
-    predictions = result['predictions']
-
-    # เลือกการทำนายที่มีความมั่นใจสูงที่สุด
-    highest_confidence_prediction = max(predictions, key=lambda x: x['confidence'])
-    class_name = highest_confidence_prediction['class']
-    confidence = highest_confidence_prediction['confidence']
-
-    # แสดงผลลัพธ์การทำนาย
-    #print(f"Class: {class_name}, Confidence: {confidence:.2f}")
-
-    # ตรวจสอบว่าเสื้อผ้านี้เหมาะสมกับรูปร่างแบบไหน
-    shape_list = []
-
-    # โหลดไฟล์ CSV
-    df = pd.read_csv('ClothesClassWithShape.csv')
+    # Load and preprocess the image
+    picture = os.path.join(dir, img_path)
+    img = tf.keras.preprocessing.image.load_img(picture, target_size=(224, 224))
+    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0) / 255.0
     
-    # ค้นหาชื่อคลาสที่ตรงกัน
-    matching_rows = df[df['Class'] == class_name]
+    # Load the trained model
+    model = tf.keras.models.load_model('best_model_mobilenet.h5')
+    predictions = model.predict(img_array)
+    
+    # Get predicted class and confidence
+    predicted_class = tf.argmax(predictions, axis=1).numpy()[0]
+    confidence = tf.reduce_max(predictions).numpy()
 
-    # ดึงข้อมูลรูปร่างที่เหมาะสม
-    for value in matching_rows['Shape']:
-            shape_list = value.split(",")
-        
-    # ตรวจสอบว่ารูปร่างของผู้ใช้เหมาะสมกับเสื้อผ้าหรือไม่
-    if user_shape in shape_list:
-        return f"{class_name} is suitable for your shape" #{class_name} is suitable for your shape
+    # Get class labels (ensure you have these labels saved during training)
+    class_labels = list(train_generator.class_indices.keys())  # Example: Assuming df has a 'Class' column
+    predicted_class = class_labels[predicted_class]
+    
+    # Extract the shape list for the predicted class
+    shape_list = df[df['Class'] == predicted_class]['Shape'].values[0].split(",")
+
+    # Check if predicted class matches the user's shape
+    if predicted_class == "other":
+        return user_shape, "Please upload a valid image of clothing.", confidence
+    elif user_shape in shape_list:
+        return user_shape, f"Predicted Class: {predicted_class} is suitable for your shape.", confidence
     else:
-        return f"{class_name} is NOT suitable for your shape" #{class_name} is NOT suitable for your shape
+        return user_shape, f"Predicted Class: {predicted_class} is NOT suitable for your shape.", confidence
 
 # ฟังก์ชันสำหรับบันทึกไฟล์
 def save_file(dir, file):
@@ -98,6 +146,11 @@ def save_file(dir, file):
     if not dir.endswith('/'):
         dir += '/'
         
-    with open(f'{dir}{file.name}', 'wb+') as target:
+    # ตรวจสอบชื่อไฟล์ใหม่เพื่อหลีกเลี่ยงการซ้ำ
+    unique_filename = generate_unique_filename(dir, file.name)
+    
+    with open(f'{dir}{unique_filename}', 'wb+') as target:
         for chunk in file.chunks():
             target.write(chunk)
+    
+    return unique_filename
