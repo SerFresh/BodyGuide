@@ -111,6 +111,7 @@
             background-color: white;
             transform: translateY(0); /* เวลาคลิกให้ปุ่มกลับไปที่เดิม */
         }
+        
         @media (max-width: 768px) {
             /* For tablets and small screens */
             header {
@@ -207,7 +208,7 @@
 
             <!-- ปุ่ม submit -->
             <div>
-                <button type="submit" class="but">Predict</button>
+                <button type="submit" class="but" id="statusText" onclick="startAIProcess()">Predict</button>
             </div>
         </form>
 
@@ -231,6 +232,7 @@
                 <p>confidence: {{ confidence }}%</p>
             {% endif %}
         </div>
+        <div class="loading-icon" id="loadingIcon"></div>
     </section>
 
 {% endblock %}
